@@ -40,5 +40,29 @@ namespace TicTacToe
                 + " " + PrintHelper.GetDisplayText(Board[2, 0]) + " | " + PrintHelper.GetDisplayText(Board[2, 1]) + " | " + PrintHelper.GetDisplayText(Board[2, 2]) + " " + Environment.NewLine
                 + "   |   |   " + Environment.NewLine;
         }
+
+        public bool IsWinner(LocationMarker playerMarker)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (Board[i, 0] == playerMarker && Board[i, 1] == playerMarker && Board[i, 2] == playerMarker)
+                {
+                    return true;
+                }
+            }
+            for(int i = 0; i< 2; i++)
+            {
+                if (Board[0, i] == playerMarker && Board[1, i] == playerMarker && Board[2, i] == playerMarker)
+                {
+                    return true;
+                }
+            }
+            if(Board[0, 0] == playerMarker && Board[1, 1] == playerMarker && Board[2, 2] == playerMarker)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
     }
 }
