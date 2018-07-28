@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleInterface
 {
@@ -10,13 +6,19 @@ namespace ConsoleInterface
     {
         public static void Main(string[] args)
         {
-            var game = new TicTacToe.GameBoard();
+            var game = new TicTacToe.TicTacToeGame();
             Console.WriteLine(game.PrintBoard());
 
-            game.MarkLocation(0, 0, TicTacToe.LocationMarker.O);
+            game.MarkLocation(0, 0);
             Console.WriteLine(game.PrintBoard());
 
-            game.MarkLocation(0, 1, TicTacToe.LocationMarker.X);
+            game.MarkLocation(0, 1);
+            Console.WriteLine(game.PrintBoard());
+
+            game.MarkLocation(2, 1);
+            Console.WriteLine(game.PrintBoard());
+
+            game.MarkLocation(2, 2);
             Console.WriteLine(game.PrintBoard());
 
             Console.ReadLine();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace TicTacToe
 {
@@ -39,6 +40,20 @@ namespace TicTacToe
                 + "   |   |   " + Environment.NewLine
                 + " " + PrintHelper.GetDisplayText(Board[2, 0]) + " | " + PrintHelper.GetDisplayText(Board[2, 1]) + " | " + PrintHelper.GetDisplayText(Board[2, 2]) + " " + Environment.NewLine
                 + "   |   |   " + Environment.NewLine;
+        }
+
+        public bool IsALocationEmpty()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (Board[i, j] == LocationMarker.Empty)
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }
