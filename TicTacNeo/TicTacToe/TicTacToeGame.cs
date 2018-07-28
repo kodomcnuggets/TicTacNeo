@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace TicTacToe
 {
@@ -53,13 +54,28 @@ namespace TicTacToe
         public string ToJson()
         {
             return "{"
-                + " \"Id\": \"" + Id.ToString() + "\""
-                + ", \"Players\": [ " + Players[0].ToJson() + ", " + Players[1].ToJson() + " ]"
-                + ", \"GameBoard\": " + GameBoard.ToJson()
-                + ", \"CurrentPlayerIndex\": " + CurrentPlayerIndex.ToString()
-                + ", \"IsGameOver\": " + IsGameOver.ToString()
-                + ", \"IsGameDraw\": " + IsGameDraw.ToString()
-                + " }";
+                + "\"Id\":\"" + Id.ToString() + "\""
+                + ",\"Players\":[" + Players[0].ToJson() + "," + Players[1].ToJson() + "]"
+                + ",\"GameBoard\":" + GameBoard.ToJson()
+                + ",\"CurrentPlayerIndex\":" + CurrentPlayerIndex.ToString()
+                + ",\"IsGameOver\":" + IsGameOver.ToString()
+                + ",\"IsGameDraw\":" + IsGameDraw.ToString()
+                + "}";
+        }
+
+        public bool Update(string json)
+        {
+            var gameUpdate = (TicTacToeGame)JsonConvert.DeserializeObject(json, typeof(TicTacToeGame));
+            if (Id != gameUpdate.Id)
+                return false;
+
+            Players = gameUpdate.Players;
+            CurrentPlayerIndex = gameUpdate.CurrentPlayerIndex;
+            GameBoard = gameUpdate.GameBoard;
+            IsGameOver = gameUpdate.IsGameOver;
+            IsGameDraw = gameUpdate.IsGameDraw;
+
+            return true;
         }
     }
 }

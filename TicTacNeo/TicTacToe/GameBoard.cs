@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace TicTacToe
 {
@@ -86,13 +85,13 @@ namespace TicTacToe
         public string ToJson()
         {
             return "{"
-                + " \"Board\":"
-                    + " ["
-                        + " [ " + ((short)Board[0, 0]).ToString() + ", " + ((short)Board[0, 1]).ToString() + ", " + ((short)Board[0, 2]).ToString() + " ]"
-                        + " [ " + ((short)Board[1, 0]).ToString() + ", " + ((short)Board[1, 1]).ToString() + ", " + ((short)Board[1, 2]).ToString() + " ]"
-                        + " [ " + ((short)Board[2, 0]).ToString() + ", " + ((short)Board[2, 1]).ToString() + ", " + ((short)Board[2, 2]).ToString() + " ]"
-                    + " ]"
-                + " }";
+                + "\"Board\":"
+                    + "["
+                        + "[" + ((short)Board[0, 0]).ToString() + "," + ((short)Board[0, 1]).ToString() + "," + ((short)Board[0, 2]).ToString() + "]"
+                        + "[" + ((short)Board[1, 0]).ToString() + "," + ((short)Board[1, 1]).ToString() + "," + ((short)Board[1, 2]).ToString() + "]"
+                        + "[" + ((short)Board[2, 0]).ToString() + "," + ((short)Board[2, 1]).ToString() + "," + ((short)Board[2, 2]).ToString() + "]"
+                    + "]"
+                + "}";
         }
     }
 }

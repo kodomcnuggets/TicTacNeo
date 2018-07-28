@@ -18,10 +18,10 @@ namespace TicTacToe
         public string ToJson()
         {
             return "{"
-                + " \"Id\": \"" + Id.ToString() + "\""
-                + ", \"Marker\": " + ((short)Marker).ToString()
-                + ", \"Index\": " + Index.ToString()
-                + " }";
+                + "\"Id\":\"" + Id.ToString() + "\""
+                + ",\"Marker\":" + ((short)Marker).ToString()
+                + ",\"Index\":" + Index.ToString()
+                + "}";
         }
     }
 }

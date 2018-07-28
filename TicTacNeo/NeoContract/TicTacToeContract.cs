@@ -8,13 +8,21 @@ using System.Threading.Tasks;
 
 namespace NeoContract
 {
-    public class TicTacToeStorageContract : SmartContract
+    public class TicTacToeContract : SmartContract
     {
         public static string Main(string operation, params object[] args)
         {
             string error = "null";
             if (Runtime.Trigger == TriggerType.Application)
             {
+                if (operation == "create")
+                {
+                    if (args.Count() == 0)
+                        return Create();
+
+                    error = "Incorrect number of args (" + args.Count() + ") for operation (" + operation + ")";
+                }
+
                 if (operation == "save")
                 {
                     if (args.Count() == 2)
@@ -35,6 +43,13 @@ namespace NeoContract
             }
 
             return "{ \"ContractResult\": false, \"Errors\": " + error  + " }";
+        }
+
+        private static string Create()
+        {
+            var game = new TicTacToe.TicTacToeGame();
+            Save(game.Id.ToString(), game.ToJson());
+            return "{ \"ContractResult\": true, \"Errors\": null, \"Game\": \"" + game.ToJson() + "\" }";
         }
 
         private static string Save(string gameId, string game)
