@@ -10,7 +10,5 @@
 
         [PrintTextAttribute("X")]
         X
-
-        
     }
 }

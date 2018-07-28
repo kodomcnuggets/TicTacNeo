@@ -52,7 +52,7 @@ namespace TicTacToe
                 }
             }
 
-            for(int i = 0; i< 2; i++)
+            for (int i = 0; i< 2; i++)
             {
                 if (Board[0, i] == playerMarker && Board[1, i] == playerMarker && Board[2, i] == playerMarker)
                 {
@@ -60,7 +60,7 @@ namespace TicTacToe
                 }
             }
 
-            if(Board[0, 0] == playerMarker && Board[1, 1] == playerMarker && Board[2, 2] == playerMarker)
+            if (Board[0, 0] == playerMarker && Board[1, 1] == playerMarker && Board[2, 2] == playerMarker)
                 return true;
 
             if (Board[2, 0] == playerMarker && Board[1, 1] == playerMarker && Board[0, 2] == playerMarker)
