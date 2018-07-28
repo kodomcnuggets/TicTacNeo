@@ -5,6 +5,7 @@
         public Player[] Players { get; private set; }
         public GameBoard GameBoard { get; private set; }
         public Player CurrentPlayer { get; private set; }
+        public bool IsGameOver { get; private set; }
 
         public TicTacToeGame()
         {
@@ -15,10 +16,25 @@
 
         public bool MarkLocation(int row, int column)
         {
+            if (IsGameOver)
+                return false;
+
             if (!GameBoard.MarkLocation(row, column, CurrentPlayer.Marker))
                 return false;
 
-            CurrentPlayer = Players[(CurrentPlayer.Index + 1) % 2];
+            if (GameBoard.IsWinner(CurrentPlayer.Marker))
+            {
+                IsGameOver = true;
+                return true;
+            }
+
+            if (!GameBoard.IsALocationEmpty())
+            {
+                IsGameOver = true;
+                return true;
+            }
+
+            CurrentPlayer = Players[(CurrentPlayer.TurnOrder + 1) % 2];
             return true;
         }
 
