@@ -58,7 +58,7 @@ namespace NeoContract
                 contractResult = "true";
                 error = "null";
             }
-            return "{ \"ContractResult\": " + contractResult + ", \"Errors\": " + error + " }";
+            return "{ \"ContractResult\": " + contractResult + ", \"Errors\": " + error + ", \"Game\": \"" + game + "\" }";
         }
     }
 }

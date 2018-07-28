@@ -6,13 +6,22 @@ namespace TicTacToe
     {
         public Guid Id { get; private set; }
         public LocationMarker Marker { get; private set; }
-        public short TurnOrder { get; private set; }
+        public int Index { get; private set; }
 
-        public Player(LocationMarker marker, short turnOrder)
+        public Player(LocationMarker marker, short index)
         {
-            Id = new Guid();
+            Id = Guid.NewGuid();
             Marker = marker;
-            TurnOrder = turnOrder;
+            Index = index;
+        }
+
+        public string ToJson()
+        {
+            return "{"
+                + " \"Id\": \"" + Id.ToString() + "\""
+                + ", \"Marker\": " + ((short)Marker).ToString()
+                + ", \"Index\": " + Index.ToString()
+                + " }";
         }
     }
 }
