@@ -5,10 +5,12 @@
         [PrintTextAttribute(" ")]
         Empty,
 
-        [PrintTextAttribute("X")]
-        X,
-
         [PrintTextAttribute("O")]
-        O
+        O,
+
+        [PrintTextAttribute("X")]
+        X
+
+        
     }
 }
