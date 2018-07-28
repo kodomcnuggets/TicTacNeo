@@ -1,7 +1,10 @@
-﻿namespace TicTacToe
+﻿using System;
+
+namespace TicTacToe
 {
     public class TicTacToeGame
     {
+        public Guid Id { get; private set; }
         public Player[] Players { get; private set; }
         public GameBoard GameBoard { get; private set; }
         public Player CurrentPlayer { get; private set; }
@@ -9,6 +12,7 @@
 
         public TicTacToeGame()
         {
+            Id = new Guid();
             Players = new Player[2] { new Player(LocationMarker.O, 0), new Player(LocationMarker.X, 1) };
             CurrentPlayer = Players[0];
             GameBoard = new GameBoard();

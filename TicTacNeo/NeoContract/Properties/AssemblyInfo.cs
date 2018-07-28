@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NeoInterface")]
+[assembly: AssemblyTitle("NeoContract")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NeoInterface")]
+[assembly: AssemblyProduct("NeoContract")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5838be48-632e-4c1a-bf4f-9c3655c01925")]
+[assembly: Guid("b2f9172a-5a98-401e-9d9d-98c85ac92968")]
 
 // Version information for an assembly consists of the following four values:
 //
