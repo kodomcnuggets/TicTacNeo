@@ -28,6 +28,7 @@ namespace TicTacToe
             return true;
         }
 
+
         public string PrintBoard()
         {
             return "   |   |   " + Environment.NewLine
