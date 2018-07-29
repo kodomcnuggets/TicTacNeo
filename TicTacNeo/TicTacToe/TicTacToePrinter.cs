@@ -1,7 +1,6 @@
 ﻿using System;
-using static TicTacToeContract.TicTacToeContract;
 
-namespace ConsoleInterface
+namespace TicTacToe
 {
     public class TicTacToePrinter
     {

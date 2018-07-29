@@ -1,5 +1,5 @@
 ﻿using System;
-using static TicTacToeContract.TicTacToeContract;
+using TicTacToe;
 
 namespace ConsoleInterface
 {
