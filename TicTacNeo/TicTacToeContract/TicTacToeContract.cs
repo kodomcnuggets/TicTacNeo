@@ -5,7 +5,8 @@ namespace TicTacToeContract
 {
     public class TicTacToeContract : SmartContract
     {
-        #region DO NOT CHANGE HERE; CHANGE IN TicTacToe PROJECT AND COPY HERE
+        #region Models - Do not change here; Change in TicTacToe project, then copy here
+
         public enum LocationMarker
         {
             Empty,
@@ -76,48 +77,62 @@ namespace TicTacToeContract
         public class Player
         {
             public int Id { get; protected set; }
-            public LocationMarker Marker { get; protected set; }
-            public int Index { get; protected set; }
 
             protected Player() { }
 
-            public static Player NewPlayer(int id, LocationMarker marker, short index)
+            public static Player NewPlayer(int id)
             {
                 return new Player
                 {
-                    Id = id,
+                    Id = id
+                };
+            }
+        }
+
+        public class TicTacToePlayer : Player
+        {
+            public LocationMarker Marker { get; private set; }
+            public int TurnOrder { get; private set; }
+
+            private TicTacToePlayer() { }
+
+            public static TicTacToePlayer NewTicTacToePlayer(Player player, LocationMarker marker, int turnOrder)
+            {
+                return new TicTacToePlayer
+                {
+                    Id = player.Id,
                     Marker = marker,
-                    Index = index,
+                    TurnOrder = turnOrder
                 };
             }
         }
 
         public class TicTacToeGame
         {
-            public int Id { get; protected set; }
-            public Player[] Players { get; protected set; }
-            public GameBoard GameBoard { get; protected set; }
-            public int CurrentPlayerIndex { get; protected set; }
-            public Player CurrentPlayer { get { return Players[CurrentPlayerIndex]; } }
-            public bool IsGameOver { get; protected set; }
-            public bool IsGameDraw { get; protected set; }
+            public int Id { get; private set; }
+            public TicTacToePlayer[] Players { get; private set; }
+            public GameBoard GameBoard { get; private set; }
+            public int CurrentPlayerIndex { get; private set; }
+            public TicTacToePlayer CurrentPlayer { get { return Players[CurrentPlayerIndex]; } }
+            public bool IsGameFull { get; private set; }
+            public bool IsGameOver { get; private set; }
+            public bool IsGameDraw { get; private set; }
 
-            protected TicTacToeGame() { }
+            private TicTacToeGame() { }
 
-            public static TicTacToeGame NewTicTacToeGame(int id)
+            public static TicTacToeGame NewTicTacToeGame(int gameId, Player playerOne)
             {
                 return new TicTacToeGame
                 {
-                    Id = id,
-                    Players = new Player[2] { Player.NewPlayer(1, LocationMarker.O, 0), Player.NewPlayer(2, LocationMarker.X, 1) },
-                    CurrentPlayerIndex = 0,
+                    Id = gameId,
+                    Players = new TicTacToePlayer[2] { TicTacToePlayer.NewTicTacToePlayer(playerOne, LocationMarker.O, 0), null },
                     GameBoard = GameBoard.NewGameBoard()
                 };
             }
 
             public bool MarkLocation(int row, int column)
             {
-                if (IsGameOver)
+                if (!IsGameFull || IsGameOver)
                     return false;
 
                 if (!GameBoard.MarkLocation(row, column, CurrentPlayer.Marker))
@@ -136,7 +151,7 @@ namespace TicTacToeContract
                     return true;
                 }
 
-                CurrentPlayerIndex = (CurrentPlayer.Index + 1) % 2;
+                CurrentPlayerIndex = (CurrentPlayer.TurnOrder + 1) % 2;
                 return true;
             }
 
@@ -153,7 +168,46 @@ namespace TicTacToeContract
 
                 return true;
             }
+
+            public bool JoinGame(Player playerTwo)
+            {
+                if (IsGameFull)
+                    return false;
+
+                Players[1] = TicTacToePlayer.NewTicTacToePlayer(playerTwo, LocationMarker.X, 1);
+                IsGameFull = true;
+                return true;
+            }
         }
+
+        public class ContractResult
+        {
+            public bool OperationResult { get; private set; }
+            public string Error { get; private set; }
+            public TicTacToeGame Game { get; private set; }
+
+            private ContractResult() { }
+
+            public static ContractResult NewContractResult(bool operationResult, string error)
+            {
+                return new ContractResult
+                {
+                    OperationResult = operationResult,
+                    Error = error
+                };
+            }
+
+            public static ContractResult NewContractResult(bool operationResult, string error, TicTacToeGame game)
+            {
+                return new ContractResult
+                {
+                    OperationResult = operationResult,
+                    Error = error,
+                    Game = game
+                };
+            }
+        }
+
         #endregion
 
         public static string Main(string operation, params object[] args)
@@ -163,8 +217,16 @@ namespace TicTacToeContract
             {
                 if (operation == "create")
                 {
-                    if (args.Length == 0)
-                        return CreateGame();
+                    if (args.Length == 1)
+                        return CreateGame((string)args[0]);
+
+                    error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
+                }
+
+                if (operation == "join")
+                {
+                    if (args.Length == 2)
+                        return JoinGame((string)args[0], (string)args[1]);
 
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
@@ -180,39 +242,113 @@ namespace TicTacToeContract
                 error = "Invalid operation (" + operation + ")";
             }
 
-            return "{ \"ContractResult\": false, \"Errors\": " + error + " }";
+            return ContractResult.NewContractResult(false, error).Serialize().AsString();
         }
 
-        private static string CreateGame()
-        {
-            var game = TicTacToeGame.NewTicTacToeGame(1);
-            SaveGame(game);
-            return "{ \"ContractResult\": true, \"Errors\": null, \"Game\": \"" + game.Serialize().AsString() + "\" }";
-        }
+        #region Helpers
 
-        private static string SaveGame(TicTacToeGame game)
+        private static void PutGame(TicTacToeGame game)
         {
             Storage.Put(Storage.CurrentContext, game.Id + "", game.Serialize());
-            return "{ \"ContractResult\": true, \"Error\": null }";
+        }
+
+        private static TicTacToeGame GetGame(string gameId)
+        {
+            var gameBytes = Storage.Get(Storage.CurrentContext, gameId);
+            if (gameBytes == null || gameBytes.Length == 0)
+                return null;
+
+            return (TicTacToeGame)gameBytes.Deserialize();
+        }
+
+        private static Player CastPlayer(string playerJson)
+        {
+            if (playerJson == null || playerJson == "")
+                return null;
+
+            var playerBytes = playerJson.AsByteArray();
+            if (playerBytes == null || playerBytes.Length == 0)
+                return null;
+
+            return (Player)playerBytes.Deserialize();
+        }
+
+        #endregion
+
+        #region Operations
+
+        private static string CreateGame(string playerOneJson)
+        {
+            var playerOne = CastPlayer(playerOneJson);
+            bool operationResult;
+            string error;
+            TicTacToeGame game;
+
+            if (playerOne == null)
+            {
+                operationResult = false;
+                error = "Invalid Player JSON (" + playerOneJson + ")";
+                game = null;
+            }
+            else
+            {
+                operationResult = true;
+                error = null;
+                game = TicTacToeGame.NewTicTacToeGame(1, playerOne);
+                PutGame(game);
+            }
+
+            return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
+        }
+
+        private static string JoinGame(string gameId, string playerTwoJson)
+        {
+            var game = GetGame(gameId);
+            var playerTwo = CastPlayer(playerTwoJson);
+            bool operationResult;
+            string error;
+
+            if (game == null)
+            {
+                operationResult = false;
+                error = "Game not found (" + gameId + ")";
+            }
+            else if (playerTwo == null)
+            {
+                operationResult = false;
+                error = "Invalid Player JSON (" + playerTwo + ")";
+            }
+            else
+            {
+                operationResult = true;
+                error = null;
+                game.JoinGame(playerTwo);
+                PutGame(game);
+            }
+
+            return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
         }
 
         private static string FetchGame(string gameId)
         {
-            var gameBytes = Storage.Get(Storage.CurrentContext, gameId);
-            var gameJson = gameBytes.AsString();
-            string contractResult;
+            var game = GetGame(gameId);
+            bool operationResult;
             string error;
-            if (gameJson == null || gameJson == "")
+
+            if (game == null)
             {
-                contractResult = "false";
+                operationResult = false;
                 error = "Game not found (" + gameId + ")";
             }
             else
             {
-                contractResult = "true";
-                error = "null";
+                operationResult = true;
+                error = null;
             }
-            return "{ \"ContractResult\": " + contractResult + ", \"Errors\": " + error + ", \"Game\": \"" + gameJson + "\" }";
+
+            return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
         }
+
+        #endregion
     }
 }

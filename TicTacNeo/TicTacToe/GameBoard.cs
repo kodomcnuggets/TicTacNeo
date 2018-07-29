@@ -2,9 +2,9 @@
 {
     public class GameBoard
     {
-        public LocationMarker[] Board { get; protected set; }
+        public LocationMarker[] Board { get; private set; }
 
-        protected GameBoard() { }
+        private GameBoard() { }
 
         public static GameBoard NewGameBoard()
         {

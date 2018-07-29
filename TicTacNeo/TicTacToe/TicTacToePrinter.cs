@@ -41,7 +41,7 @@ namespace TicTacToe
 
         public string PrintWinner()
         {
-            return Game.IsGameDraw ? "NA" : TicTacToePrinter.GetPrintText(Game.CurrentPlayer.Marker);
+            return !Game.IsGameOver || Game.IsGameDraw ? "NA" : TicTacToePrinter.GetPrintText(Game.CurrentPlayer.Marker);
         }
     }
 }

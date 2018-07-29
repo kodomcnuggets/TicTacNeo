@@ -7,7 +7,12 @@ namespace ConsoleInterface
     {
         public static void Main(string[] args)
         {
-            var game = TicTacToeGame.NewTicTacToeGame(1);
+            var playerOne = Player.NewPlayer(1);
+            var game = TicTacToeGame.NewTicTacToeGame(1, playerOne);
+
+            var playerTwo = Player.NewPlayer(2);
+            game.JoinGame(playerTwo);
+
             var gamePrinter = new TicTacToePrinter(game);
             Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
