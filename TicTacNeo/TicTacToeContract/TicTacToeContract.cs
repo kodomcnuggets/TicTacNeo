@@ -1,14 +1,10 @@
 ﻿using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
-using System;
-using System.Numerics;
-using System.Text;
 
 namespace TicTacToeContract
 {
     public class TicTacToeContract : SmartContract
     {
-        #region DO NOT CHANGE HERE; CHANGE IN TicTacToe PROJECT AND COPY HERE
         public enum LocationMarker
         {
             Empty,
@@ -157,7 +153,6 @@ namespace TicTacToeContract
                 return true;
             }
         }
-        #endregion
 
         public static string Main(string operation, params object[] args)
         {
