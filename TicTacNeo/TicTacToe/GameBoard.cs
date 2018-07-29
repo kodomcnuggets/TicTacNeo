@@ -4,15 +4,15 @@ namespace TicTacToe
 {
     public class GameBoard
     {
-        private LocationMarker[,] Board { get; set; }
+        public LocationMarker[] Board { get; protected set; }
 
-        public GameBoard()
+        protected GameBoard() { }
+
+        public static GameBoard NewGameBoard()
         {
-            Board = new LocationMarker[3, 3]
+            return new GameBoard()
             {
-                { LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty },
-                { LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty },
-                { LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty }
+                Board = new LocationMarker[9] { LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty, LocationMarker.Empty }
             };
         }
 
@@ -21,48 +21,30 @@ namespace TicTacToe
             if (row > 2 || column > 2 || playerMarker == LocationMarker.Empty)
                 return false;
 
-            if (Board[row, column] != LocationMarker.Empty)
+            var index = row * 3 + column;
+            if (Board[index] != LocationMarker.Empty)
                 return false;
 
-            Board[row, column] = playerMarker;
+            Board[index] = playerMarker;
             return true;
-        }
-
-        public string PrintBoard()
-        {
-            return "   |   |   " + Environment.NewLine
-                + " " + PrintHelper.GetDisplayText(Board[0, 0]) + " | " + PrintHelper.GetDisplayText(Board[0, 1]) + " | " + PrintHelper.GetDisplayText(Board[0, 2]) + " " + Environment.NewLine
-                + "___|___|___" + Environment.NewLine
-                + "   |   |   " + Environment.NewLine
-                + " " + PrintHelper.GetDisplayText(Board[1, 0]) + " | " + PrintHelper.GetDisplayText(Board[1, 1]) + " | " + PrintHelper.GetDisplayText(Board[1, 2]) + " " + Environment.NewLine
-                + "___|___|___" + Environment.NewLine
-                + "   |   |   " + Environment.NewLine
-                + " " + PrintHelper.GetDisplayText(Board[2, 0]) + " | " + PrintHelper.GetDisplayText(Board[2, 1]) + " | " + PrintHelper.GetDisplayText(Board[2, 2]) + " " + Environment.NewLine
-                + "   |   |   " + Environment.NewLine;
         }
 
         public bool IsWinner(LocationMarker playerMarker)
         {
             for (int i = 0; i < 2; i++)
             {
-                if (Board[i, 0] == playerMarker && Board[i, 1] == playerMarker && Board[i, 2] == playerMarker)
-                {
+                var rowOffset = i * 3;
+                if (Board[rowOffset] == playerMarker && Board[rowOffset + 1] == playerMarker && Board[rowOffset + 2] == playerMarker)
                     return true;
-                }
+
+                if (Board[i] == playerMarker && Board[3 + i] == playerMarker && Board[6 + i] == playerMarker)
+                    return true;
             }
 
-            for (int i = 0; i< 2; i++)
-            {
-                if (Board[0, i] == playerMarker && Board[1, i] == playerMarker && Board[2, i] == playerMarker)
-                {
-                    return true;
-                }
-            }
-
-            if (Board[0, 0] == playerMarker && Board[1, 1] == playerMarker && Board[2, 2] == playerMarker)
+            if (Board[0] == playerMarker && Board[4] == playerMarker && Board[8] == playerMarker)
                 return true;
 
-            if (Board[2, 0] == playerMarker && Board[1, 1] == playerMarker && Board[0, 2] == playerMarker)
+            if (Board[6] == playerMarker && Board[4] == playerMarker && Board[2] == playerMarker)
                 return true;
 
             return false;
@@ -70,28 +52,13 @@ namespace TicTacToe
 
         public bool IsALocationEmpty()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 9; i++)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    if (Board[i, j] == LocationMarker.Empty)
-                        return true;
-                }
+                if (Board[i] == LocationMarker.Empty)
+                    return true;
             }
 
             return false;
-        }
-
-        public string ToJson()
-        {
-            return "{"
-                + "\"Board\":"
-                    + "["
-                        + "[" + ((short)Board[0, 0]).ToString() + "," + ((short)Board[0, 1]).ToString() + "," + ((short)Board[0, 2]).ToString() + "]"
-                        + "[" + ((short)Board[1, 0]).ToString() + "," + ((short)Board[1, 1]).ToString() + "," + ((short)Board[1, 2]).ToString() + "]"
-                        + "[" + ((short)Board[2, 0]).ToString() + "," + ((short)Board[2, 1]).ToString() + "," + ((short)Board[2, 2]).ToString() + "]"
-                    + "]"
-                + "}";
         }
     }
 }

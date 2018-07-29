@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 
 namespace TicTacToe
 {
     public class TicTacToeGame
     {
-        public Guid Id { get; private set; }
+        public int Id { get; private set; }
         public Player[] Players { get; private set; }
         public GameBoard GameBoard { get; private set; }
         public int CurrentPlayerIndex { get; private set; }
@@ -13,12 +12,17 @@ namespace TicTacToe
         public bool IsGameOver { get; private set; }
         public bool IsGameDraw { get; private set; }
 
-        public TicTacToeGame()
+        private TicTacToeGame() { }
+
+        public static TicTacToeGame NewTicTacToeGame(int id)
         {
-            Id = Guid.NewGuid();
-            Players = new Player[2] { new Player(LocationMarker.O, 0), new Player(LocationMarker.X, 1) };
-            CurrentPlayerIndex = 0;
-            GameBoard = new GameBoard();
+            return new TicTacToeGame
+            {
+                Id = id,
+                Players = new Player[2] { Player.NewPlayer(1, LocationMarker.O, 0), Player.NewPlayer(2, LocationMarker.X, 1) },
+                CurrentPlayerIndex = 0,
+                GameBoard = GameBoard.NewGameBoard()
+            };
         }
 
         public bool MarkLocation(int row, int column)
@@ -46,34 +50,16 @@ namespace TicTacToe
             return true;
         }
 
-        public string PrintBoard()
+        public bool Update(TicTacToeGame updateGame)
         {
-            return GameBoard.PrintBoard();
-        }
-
-        public string ToJson()
-        {
-            return "{"
-                + "\"Id\":\"" + Id.ToString() + "\""
-                + ",\"Players\":[" + Players[0].ToJson() + "," + Players[1].ToJson() + "]"
-                + ",\"GameBoard\":" + GameBoard.ToJson()
-                + ",\"CurrentPlayerIndex\":" + CurrentPlayerIndex.ToString()
-                + ",\"IsGameOver\":" + IsGameOver.ToString()
-                + ",\"IsGameDraw\":" + IsGameDraw.ToString()
-                + "}";
-        }
-
-        public bool Update(string json)
-        {
-            var gameUpdate = (TicTacToeGame)JsonConvert.DeserializeObject(json, typeof(TicTacToeGame));
-            if (Id != gameUpdate.Id)
+            if (Id != updateGame.Id)
                 return false;
 
-            Players = gameUpdate.Players;
-            CurrentPlayerIndex = gameUpdate.CurrentPlayerIndex;
-            GameBoard = gameUpdate.GameBoard;
-            IsGameOver = gameUpdate.IsGameOver;
-            IsGameDraw = gameUpdate.IsGameDraw;
+            Players = updateGame.Players;
+            CurrentPlayerIndex = updateGame.CurrentPlayerIndex;
+            GameBoard = updateGame.GameBoard;
+            IsGameOver = updateGame.IsGameOver;
+            IsGameDraw = updateGame.IsGameDraw;
 
             return true;
         }

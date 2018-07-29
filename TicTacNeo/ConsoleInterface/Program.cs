@@ -1,4 +1,5 @@
 ﻿using System;
+using TicTacToe;
 
 namespace ConsoleInterface
 {
@@ -6,39 +7,33 @@ namespace ConsoleInterface
     {
         public static void Main(string[] args)
         {
-            var game = new TicTacToe.TicTacToeGame();
-            Console.WriteLine(game.PrintBoard());
-            Console.WriteLine(game.ToJson());
+            var game = TicTacToeGame.NewTicTacToeGame(1);
+            var gamePrinter = new TicTacToePrinter(game);
+            Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
 
             game.MarkLocation(0, 0);
-            Console.WriteLine(game.PrintBoard());
-            Console.WriteLine(game.ToJson());
+            Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
 
             game.MarkLocation(0, 1);
-            Console.WriteLine(game.PrintBoard());
-            Console.WriteLine(game.ToJson());
+            Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
 
             game.MarkLocation(1, 0);
-            Console.WriteLine(game.PrintBoard());
-            Console.WriteLine(game.ToJson());
+            Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
 
             game.MarkLocation(2, 1);
-            Console.WriteLine(game.PrintBoard());
-            Console.WriteLine(game.ToJson());
+            Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
 
             game.MarkLocation(2, 0);
-            Console.WriteLine(game.PrintBoard());
-            Console.WriteLine(game.ToJson());
+            Console.WriteLine(gamePrinter.PrintBoard());
             Console.ReadLine();
 
             Console.WriteLine("Is game over?: " + game.IsGameOver);
-            Console.WriteLine("Winner: " + (game.IsGameDraw ? "NA" : TicTacToe.PrintHelper.GetDisplayText(game.CurrentPlayer.Marker)));
-            Console.WriteLine(game.ToJson());
+            Console.WriteLine("Winner: " + gamePrinter.PrintWinner());
             Console.ReadLine();
         }
     }
