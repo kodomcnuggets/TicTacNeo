@@ -1,5 +1,6 @@
 ﻿using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
+using System.Numerics;
 
 namespace TicTacToeContract
 {
@@ -76,11 +77,11 @@ namespace TicTacToeContract
 
         public class Player
         {
-            public int Id { get; protected set; }
+            public string Id { get; protected set; }
 
             protected Player() { }
 
-            public static Player NewPlayer(int id)
+            public static Player NewPlayer(string id)
             {
                 return new Player
                 {
@@ -109,7 +110,7 @@ namespace TicTacToeContract
 
         public class TicTacToeGame
         {
-            public int Id { get; private set; }
+            public string Id { get; private set; }
             public TicTacToePlayer[] Players { get; private set; }
             public GameBoard GameBoard { get; private set; }
             public int CurrentPlayerIndex { get; private set; }
@@ -120,7 +121,7 @@ namespace TicTacToeContract
 
             private TicTacToeGame() { }
 
-            public static TicTacToeGame NewTicTacToeGame(int gameId, Player playerOne)
+            public static TicTacToeGame NewTicTacToeGame(string gameId, Player playerOne)
             {
                 return new TicTacToeGame
                 {
@@ -215,7 +216,7 @@ namespace TicTacToeContract
             string error = "null";
             if (Runtime.Trigger == TriggerType.Application)
             {
-                if (operation == "create")
+                if (operation == "creategame")
                 {
                     if (args.Length == 1)
                         return CreateGame((string)args[0]);
@@ -223,7 +224,7 @@ namespace TicTacToeContract
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
 
-                if (operation == "join")
+                if (operation == "joingame")
                 {
                     if (args.Length == 2)
                         return JoinGame((string)args[0], (string)args[1]);
@@ -231,7 +232,15 @@ namespace TicTacToeContract
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
 
-                if (operation == "fetch")
+                if (operation == "marklocation")
+                {
+                    if (args.Length == 4)
+                        return MarkLocation((string)args[0], (string)args[1], (int)args[2], (int)args[3]);
+
+                    error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
+                }
+
+                if (operation == "fetchgame")
                 {
                     if (args.Length == 1)
                         return FetchGame((string)args[0]);
@@ -246,10 +255,27 @@ namespace TicTacToeContract
         }
 
         #region Helpers
+        private static string GetNextGameId()
+        {
+            var gameIdBytes = Storage.Get(Storage.CurrentContext, "GameId");
+            BigInteger gameId;
+            if (gameIdBytes == null || gameIdBytes.Length == 0)
+            {
+                gameId = 1;
+            }
+            else
+            {
+                gameId = gameIdBytes.AsBigInteger();
+                gameId = gameId + 1;
+            }
+
+            Storage.Put(Storage.CurrentContext, "GameId", gameId);
+            return gameId.AsByteArray().AsString();
+        }
 
         private static void PutGame(TicTacToeGame game)
         {
-            Storage.Put(Storage.CurrentContext, game.Id + "", game.Serialize());
+            Storage.Put(Storage.CurrentContext, game.Id, game.Serialize());
         }
 
         private static TicTacToeGame GetGame(string gameId)
@@ -294,7 +320,7 @@ namespace TicTacToeContract
             {
                 operationResult = true;
                 error = null;
-                game = TicTacToeGame.NewTicTacToeGame(1, playerOne);
+                game = TicTacToeGame.NewTicTacToeGame(GetNextGameId(), playerOne);
                 PutGame(game);
             }
 
@@ -324,6 +350,32 @@ namespace TicTacToeContract
                 error = null;
                 game.JoinGame(playerTwo);
                 PutGame(game);
+            }
+
+            return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
+        }
+
+        private static string MarkLocation(string gameId, string playerId, int row, int column)
+        {
+            var game = GetGame(gameId);
+            bool operationResult;
+            string error;
+
+            if (game == null)
+            {
+                operationResult = false;
+                error = "Game not found (" + gameId + ")";
+            }
+            else if (game.CurrentPlayer.Id != playerId)
+            {
+                operationResult = false;
+                error = "Not player's turn (" + playerId + ")";
+            }
+            else
+            {
+                operationResult = true;
+                error = null;
+                game.MarkLocation(row, column);
             }
 
             return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();

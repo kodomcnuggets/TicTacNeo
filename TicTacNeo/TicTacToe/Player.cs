@@ -2,11 +2,11 @@
 {
     public class Player
     {
-        public int Id { get; protected set; }
+        public string Id { get; protected set; }
 
         protected Player() { }
 
-        public static Player NewPlayer(int id)
+        public static Player NewPlayer(string id)
         {
             return new Player
             {

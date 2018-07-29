@@ -2,7 +2,7 @@
 {
     public class TicTacToeGame
     {
-        public int Id { get; private set; }
+        public string Id { get; private set; }
         public TicTacToePlayer[] Players { get; private set; }
         public GameBoard GameBoard { get; private set; }
         public int CurrentPlayerIndex { get; private set; }
@@ -13,7 +13,7 @@
 
         private TicTacToeGame() { }
 
-        public static TicTacToeGame NewTicTacToeGame(int gameId, Player playerOne)
+        public static TicTacToeGame NewTicTacToeGame(string gameId, Player playerOne)
         {
             return new TicTacToeGame
             {
