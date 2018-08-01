@@ -7,16 +7,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TicTacToe;
 
 namespace TicTacToeGui
 {
     public partial class Form1 : Form
     {
         
-        public Form1()
+        public Form1(string gameID)
         {
             InitializeComponent();
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            GameIDLabel.Text += gameID;
+
+        }
+
+        private void btn0_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void btn1_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }
