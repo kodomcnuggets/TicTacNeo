@@ -19,6 +19,7 @@ namespace TicTacToeGui
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new StartForm());
 
+
         }
     }
 }
