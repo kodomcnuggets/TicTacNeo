@@ -24,6 +24,7 @@ namespace TicTacToeGui
 
         }
 
+        // Checks whose turn it is
         public void turnCounter()
         {
             if (turn % 2 != 0)
@@ -36,6 +37,8 @@ namespace TicTacToeGui
             }
         }
 
+        // Need to make this a get input which then checks if any of the surrounding spaces are of the same Text value
+        //      to prevent having to check each time for a win
         public void isWInner(string player)
         {
             if(btn0.Text == player && btn1.Text == player && btn2.Text == player)
@@ -52,6 +55,7 @@ namespace TicTacToeGui
             }
         }
 
+        // Beginning of button click events. There is a way to streamline this into one method, have to look that up again
         private void btn0_Click(object sender, EventArgs e)
         {
             if(btn0.Text == "")
