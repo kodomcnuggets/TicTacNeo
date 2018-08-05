@@ -223,38 +223,38 @@ namespace TicTacToeContract
 
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
-
-                if (operation == "joingame")
+                else if (operation == "joingame")
                 {
-                    if (args.Length == 2)
-                        return JoinGame((string)args[0], (string)args[1]);
+                    if (args.Length == 1)
+                        return JoinGame((string)args[1]);
 
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
-
-                if (operation == "marklocation")
+                else if (operation == "marklocation")
                 {
                     if (args.Length == 4)
                         return MarkLocation((string)args[0], (string)args[1], (int)args[2], (int)args[3]);
 
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
-
-                if (operation == "fetchgame")
+                else if (operation == "fetchgame")
                 {
                     if (args.Length == 1)
                         return FetchGame((string)args[0]);
 
                     error = "Incorrect number of args (" + args.Length + ") for operation (" + operation + ")";
                 }
-
-                error = "Invalid operation (" + operation + ")";
+                else
+                {
+                    error = "Invalid operation (" + operation + ")";
+                }
             }
 
             return ContractResult.NewContractResult(false, error).Serialize().AsString();
         }
 
         #region Helpers
+
         private static string GetNextGameId()
         {
             var gameIdBytes = Storage.Get(Storage.CurrentContext, "GameId");
@@ -273,9 +273,20 @@ namespace TicTacToeContract
             return gameId.AsByteArray().AsString();
         }
 
-        private static void PutGame(TicTacToeGame game)
+        private static void OpenGame(TicTacToeGame game)
+        {
+            Storage.Put(Storage.CurrentContext, "o-" + game.Id, game.Serialize());
+        }
+
+        private static void SaveGame(TicTacToeGame game)
         {
             Storage.Put(Storage.CurrentContext, game.Id, game.Serialize());
+        }
+
+        private static void CloseGame(TicTacToeGame game)
+        {
+            Storage.Delete(Storage.CurrentContext, "o-" + game.Id);
+            SaveGame(game);
         }
 
         private static TicTacToeGame GetGame(string gameId)
@@ -297,6 +308,12 @@ namespace TicTacToeContract
                 return null;
 
             return (Player)playerBytes.Deserialize();
+        }
+
+        private static TicTacToeGame FindOpenGame()
+        {
+            var openGames = Storage.Find(Storage.CurrentContext, "o-");
+            return (TicTacToeGame)openGames.Value.Deserialize();
         }
 
         #endregion
@@ -321,15 +338,15 @@ namespace TicTacToeContract
                 operationResult = true;
                 error = null;
                 game = TicTacToeGame.NewTicTacToeGame(GetNextGameId(), playerOne);
-                PutGame(game);
+                OpenGame(game);
             }
 
             return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
         }
 
-        private static string JoinGame(string gameId, string playerTwoJson)
+        private static string JoinGame(string playerTwoJson)
         {
-            var game = GetGame(gameId);
+            var game = FindOpenGame();
             var playerTwo = CastPlayer(playerTwoJson);
             bool operationResult;
             string error;
@@ -337,7 +354,7 @@ namespace TicTacToeContract
             if (game == null)
             {
                 operationResult = false;
-                error = "Game not found (" + gameId + ")";
+                error = "No games available";
             }
             else if (playerTwo == null)
             {
@@ -346,10 +363,17 @@ namespace TicTacToeContract
             }
             else
             {
-                operationResult = true;
-                error = null;
-                game.JoinGame(playerTwo);
-                PutGame(game);
+                if(game.JoinGame(playerTwo))
+                {
+                    operationResult = true;
+                    error = null;
+                    CloseGame(game);
+                }
+                else
+                {
+                    operationResult = false;
+                    error = "Game full (" + game.Id + ")";
+                }
             }
 
             return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
@@ -376,6 +400,7 @@ namespace TicTacToeContract
                 operationResult = true;
                 error = null;
                 game.MarkLocation(row, column);
+                SaveGame(game);
             }
 
             return ContractResult.NewContractResult(operationResult, error, game).Serialize().AsString();
